@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.report.mapper.ReportQueryItemMapper">
+    <resultMap id="Result" type="com.ruoyi.report.domain.ReportQueryItem">
+        <id property="id" column="id"/>
+        <result property="reportId" column="report_id"/>
+        <result property="fieldName" column="field_name"/>
+        <result property="fieldLabel" column="field_label"/>
+        <result property="componentType" column="component_type"/>
+        <result property="queryType" column="query_type"/>
+        <result property="placeholder" column="placeholder"/>
+        <result property="defaultValue" column="default_value"/>
+        <result property="optionSource" column="option_source"/>
+        <result property="optionConfig" column="option_config"/>
+        <result property="required" column="required"/>
+        <result property="visible" column="visible"/>
+        <result property="sort" column="sort"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateTime" column="update_time"/>
+    </resultMap>
+    <sql id="columns">id
+    ,report_id,field_name,field_label,component_type,query_type,placeholder,default_value,option_source,option_config,required,visible,sort,create_time,update_time</sql>
+    <select id="selectReportQueryItemById" resultMap="Result">select
+        <include refid="columns"/>
+        from report_query_item where id=#{id}
+    </select>
+    <select id="selectReportQueryItemList" parameterType="com.ruoyi.report.domain.ReportQueryItem" resultMap="Result">
+        select
+        <include refid="columns"/>
+        from report_query_item
+        <where>
+            <if test="reportId != null">report_id=#{reportId}</if>
+            <if test="fieldName != null and fieldName != ''">and field_name like concat('%',#{fieldName},'%')</if>
+            <if test="visible != null">and visible=#{visible}</if>
+        </where>
+        order by sort asc,id asc
+    </select>
+    <insert id="insertReportQueryItem" parameterType="com.ruoyi.report.domain.ReportQueryItem" useGeneratedKeys="true"
+            keyProperty="id">insert into report_query_item(report_id, field_name, field_label, component_type,
+                                                           query_type, placeholder, default_value, option_source,
+                                                           option_config, required, visible, sort)
+                             values (#{reportId}, #{fieldName}, #{fieldLabel}, #{componentType},
+                                     coalesce(#{queryType}, 'eq'), #{placeholder}, #{defaultValue}, #{optionSource},
+                                     #{optionConfig}, coalesce(#{required}, 0), coalesce(#{visible}, 1),
+                                     coalesce(#{sort}, 0))</insert>
+    <update id="updateReportQueryItem" parameterType="com.ruoyi.report.domain.ReportQueryItem">update report_query_item
+        <set>
+            <if test="reportId != null">report_id=#{reportId},</if>
+            <if test="fieldName != null">field_name=#{fieldName},</if>
+            <if test="fieldLabel != null">field_label=#{fieldLabel},</if>
+            <if test="componentType != null">component_type=#{componentType},</if>
+            <if test="queryType != null">query_type=#{queryType},</if>
+            <if test="placeholder != null">placeholder=#{placeholder},</if>
+            <if test="defaultValue != null">default_value=#{defaultValue},</if>
+            <if test="optionSource != null">option_source=#{optionSource},</if>
+            <if test="optionConfig != null">option_config=#{optionConfig},</if>
+            <if test="required != null">required=#{required},</if>
+            <if test="visible != null">visible=#{visible},</if>
+            <if test="sort != null">sort=#{sort},</if>
+        </set>
+        where id=#{id}
+    </update>
+    <delete id="deleteReportQueryItemByIds">delete from report_query_item where id in
+        <foreach collection="array" item="id" open="(" separator="," close=")">#{id}</foreach>
+    </delete>
+</mapper>

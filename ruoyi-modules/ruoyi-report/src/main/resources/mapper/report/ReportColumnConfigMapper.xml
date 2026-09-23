@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.report.mapper.ReportColumnConfigMapper">
+    <resultMap id="Result" type="com.ruoyi.report.domain.ReportColumnConfig">
+        <id property="id" column="id"/>
+        <result property="reportId" column="report_id"/>
+        <result property="fieldName" column="field_name"/>
+        <result property="fieldLabel" column="field_label"/>
+        <result property="fieldType" column="field_type"/>
+        <result property="width" column="width"/>
+        <result property="align" column="align"/>
+        <result property="formatter" column="formatter"/>
+        <result property="dictType" column="dict_type"/>
+        <result property="sortable" column="sortable"/>
+        <result property="visible" column="visible"/>
+        <result property="fixed" column="fixed"/>
+        <result property="sort" column="sort"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateTime" column="update_time"/>
+    </resultMap>
+    <sql id="columns">id
+    ,report_id,field_name,field_label,field_type,width,align,formatter,dict_type,sortable,visible,fixed,sort,create_time,update_time</sql>
+    <select id="selectReportColumnConfigById" resultMap="Result">select
+        <include refid="columns"/>
+        from report_column_config where id=#{id}
+    </select>
+    <select id="selectReportColumnConfigList" parameterType="com.ruoyi.report.domain.ReportColumnConfig"
+            resultMap="Result">select
+        <include refid="columns"/>
+        from report_column_config
+        <where>
+            <if test="reportId != null">report_id=#{reportId}</if>
+            <if test="fieldName != null and fieldName != ''">and field_name like concat('%',#{fieldName},'%')</if>
+            <if test="visible != null">and visible=#{visible}</if>
+        </where>
+        order by sort asc,id asc
+    </select>
+    <insert id="insertReportColumnConfig" parameterType="com.ruoyi.report.domain.ReportColumnConfig"
+            useGeneratedKeys="true" keyProperty="id">insert into report_column_config(report_id, field_name,
+                                                                                      field_label, field_type, width,
+                                                                                      align, formatter, dict_type,
+                                                                                      sortable, visible, fixed, sort)
+                                                     values (#{reportId}, #{fieldName}, #{fieldLabel},
+                                                             coalesce(#{fieldType}, 'string'), #{width},
+                                                             coalesce(#{align}, 'left'), #{formatter}, #{dictType},
+                                                             coalesce(#{sortable}, 0), coalesce(#{visible}, 1),
+                                                             #{fixed}, coalesce(#{sort}, 0))</insert>
+    <update id="updateReportColumnConfig" parameterType="com.ruoyi.report.domain.ReportColumnConfig">update
+        report_column_config
+        <set>
+            <if test="reportId != null">report_id=#{reportId},</if>
+            <if test="fieldName != null">field_name=#{fieldName},</if>
+            <if test="fieldLabel != null">field_label=#{fieldLabel},</if>
+            <if test="fieldType != null">field_type=#{fieldType},</if>
+            <if test="width != null">width=#{width},</if>
+            <if test="align != null">align=#{align},</if>
+            <if test="formatter != null">formatter=#{formatter},</if>
+            <if test="dictType != null">dict_type=#{dictType},</if>
+            <if test="sortable != null">sortable=#{sortable},</if>
+            <if test="visible != null">visible=#{visible},</if>
+            <if test="fixed != null">fixed=#{fixed},</if>
+            <if test="sort != null">sort=#{sort},</if>
+        </set>
+        where id=#{id}
+    </update>
+    <delete id="deleteReportColumnConfigByIds">delete from report_column_config where id in
+        <foreach collection="array" item="id" open="(" separator="," close=")">#{id}</foreach>
+    </delete>
+</mapper>

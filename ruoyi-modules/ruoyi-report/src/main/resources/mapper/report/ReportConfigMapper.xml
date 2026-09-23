@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.report.mapper.ReportConfigMapper">
+    <resultMap id="ReportConfigResult" type="com.ruoyi.report.domain.ReportConfig">
+        <id property="id" column="id"/><result property="reportCode" column="report_code"/><result property="reportName" column="report_name"/>
+        <result property="description" column="description"/><result property="dataSource" column="data_source"/><result property="queryApi" column="query_api"/>
+        <result property="status" column="status"/><result property="sort" column="sort"/><result property="createBy" column="create_by"/><result property="createTime" column="create_time"/>
+        <result property="updateBy" column="update_by"/><result property="updateTime" column="update_time"/><result property="deleted" column="deleted"/>
+    </resultMap>
+    <sql id="columns">id, report_code, report_name, description, data_source, query_api, status, sort, create_by, create_time, update_by, update_time, deleted</sql>
+    <select id="selectReportConfigById" resultMap="ReportConfigResult">select <include refid="columns"/> from report_config where id=#{id} and deleted=0</select>
+    <select id="selectReportConfigByCode" resultMap="ReportConfigResult">select <include refid="columns"/> from report_config where report_code=#{reportCode} limit 1</select>
+    <select id="selectReportConfigList" parameterType="com.ruoyi.report.domain.ReportConfig" resultMap="ReportConfigResult">select <include refid="columns"/> from report_config <where>deleted=0 <if test="reportCode != null and reportCode != ''">and report_code like concat('%',#{reportCode},'%')</if><if test="reportName != null and reportName != ''">and report_name like concat('%',#{reportName},'%')</if><if test="status != null">and status=#{status}</if></where> order by sort asc,id desc</select>
+    <insert id="insertReportConfig" parameterType="com.ruoyi.report.domain.ReportConfig" useGeneratedKeys="true" keyProperty="id">insert into report_config(report_code,report_name,description,data_source,query_api,status,sort,create_by,create_time) values(#{reportCode},#{reportName},#{description},#{dataSource},#{queryApi},coalesce(#{status},1),coalesce(#{sort},0),#{createBy},now())</insert>
+    <update id="updateReportConfig" parameterType="com.ruoyi.report.domain.ReportConfig">update report_config <set><if test="reportCode != null">report_code=#{reportCode},</if><if test="reportName != null">report_name=#{reportName},</if><if test="description != null">description=#{description},</if><if test="dataSource != null">data_source=#{dataSource},</if><if test="queryApi != null">query_api=#{queryApi},</if><if test="status != null">status=#{status},</if><if test="sort != null">sort=#{sort},</if><if test="updateBy != null">update_by=#{updateBy},</if></set> where id=#{id} and deleted=0</update>
+    <update id="deleteReportConfigByIds">update report_config set deleted=1 where id in <foreach collection="array" item="id" open="(" separator="," close=")">#{id}</foreach></update>
+    <select id="selectReportData" resultType="java.util.HashMap">
+        select * from ${tableName}
+        <where>
+            <foreach collection="items" item="item">
+                <if test="params[item.fieldName] != null">
+                    <choose>
+                        <when test="item.queryType == 'eq'">and ${item.fieldName} = #{params[item.fieldName]}</when>
+                        <when test="item.queryType == 'like'">and ${item.fieldName} like concat('%', '${params[item.fieldName]}', '%') </when>
+                        <when test="item.queryType == 'gt'">and ${item.fieldName} &gt; #{params[item.fieldName]}</when>
+                        <when test="item.queryType == 'ge'">and ${item.fieldName} &gt;= #{params[item.fieldName]}</when>
+                        <when test="item.queryType == 'lt'">and ${item.fieldName} &lt; #{params[item.fieldName]}</when>
+                        <when test="item.queryType == 'le'">and ${item.fieldName} &lt;= #{params[item.fieldName]}</when>
+                        <when test="item.queryType == 'between' and params[item.fieldName].size() >= 2">and ${item.fieldName} between #{params[item.fieldName][0]} and #{params[item.fieldName][1]}</when>
+                        <when test="item.queryType == 'in'">
+                            and ${item.fieldName} in
+                            <foreach collection="params[item.fieldName]" item="value" open="(" separator="," close=")">#{value}</foreach>
+                        </when>
+                    </choose>
+                </if>
+            </foreach>
+        </where>
+    </select>
+</mapper>
