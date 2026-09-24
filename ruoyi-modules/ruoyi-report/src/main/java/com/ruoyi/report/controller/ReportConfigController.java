@@ -6,6 +6,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.regex.Pattern;
 
+import com.ruoyi.common.core.domain.R;
+import com.ruoyi.system.api.model.LoginUser;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -111,5 +113,12 @@ public class ReportConfigController extends BaseController {
     @DeleteMapping("/{ids}")
     public AjaxResult remove(@PathVariable Long[] ids) {
         return toAjax(service.deleteByIds(ids));
+    }
+
+    //feign调用RemoteFileService
+    @RequiresPermissions("report:config:getUserService")
+    @GetMapping("/getUserService")
+    public R<LoginUser> getUserService(@RequestParam String username, @RequestParam String source) {
+        return service.getUserService(username,source);
     }
 }

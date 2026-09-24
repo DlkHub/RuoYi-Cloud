@@ -3,6 +3,10 @@ package com.ruoyi.report.service.impl;
 import java.util.List;
 import java.util.Map;
 
+import com.ruoyi.common.core.domain.R;
+import com.ruoyi.system.api.RemoteFileService;
+import com.ruoyi.system.api.RemoteUserService;
+import com.ruoyi.system.api.model.LoginUser;
 import org.springframework.stereotype.Service;
 import org.springframework.beans.factory.annotation.Autowired;
 import com.ruoyi.common.core.constant.UserConstants;
@@ -16,6 +20,8 @@ import com.ruoyi.report.service.IReportConfigService;
 public class ReportConfigServiceImpl implements IReportConfigService {
     @Autowired
     private ReportConfigMapper mapper;
+    @Autowired
+    private RemoteUserService remoteUserService;
 
     public ReportConfig selectById(Long id) {
         return mapper.selectReportConfigById(id);
@@ -45,4 +51,10 @@ public class ReportConfigServiceImpl implements IReportConfigService {
         ReportConfig existed = mapper.selectReportConfigByCode(config.getReportCode());
         return StringUtils.isNull(existed) || existed.getId().longValue() == (config.getId() == null ? -1L : config.getId().longValue()) ? UserConstants.UNIQUE : UserConstants.NOT_UNIQUE;
     }
+
+    @Override
+    public R<LoginUser> getUserService(String username,String source) {
+        return remoteUserService.getUserInfo(username,source);
+    }
+
 }

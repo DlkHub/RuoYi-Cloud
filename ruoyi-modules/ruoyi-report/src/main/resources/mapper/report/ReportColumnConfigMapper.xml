@@ -25,7 +25,8 @@
         from report_column_config where id=#{id}
     </select>
     <select id="selectReportColumnConfigList" parameterType="com.ruoyi.report.domain.ReportColumnConfig"
-            resultMap="Result">select
+            resultMap="Result">
+        select
         <include refid="columns"/>
         from report_column_config
         <where>
